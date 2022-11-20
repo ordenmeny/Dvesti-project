@@ -5,6 +5,7 @@ from flask_ckeditor import CKEditorField
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
+from transliterate import translit, get_available_language_codes
 from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
@@ -14,17 +15,13 @@ app.config['SECRET_KEY'] = 'c45264839c074e240ec999b2d2d97'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///dvesti.db"
 
 app.config['UPLOAD_FOLDER'] = 'static/images'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 db.init_app(app)
 
 ckeditor = CKEditor(app)
-
-
-def my_length_check(form, field):
-    if len(field.data) > 50:
-        raise validators.ValidationError('Field must be less than 50 characters')
 
 
 class Add_article(Form):
@@ -59,30 +56,32 @@ def add_article():
         text_article = request.form['text_article']
         main_img = request.files['main_img']
 
-        # Grab Image Name
-        pic_filename = secure_filename(main_img.filename)
-
-        # set UUID
-        pic_name = str(uuid.uuid1()) + '_.' + pic_filename
-
-        # Save That image
-        main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-
-        # name picture to add to DB
-        main_img = pic_name
+        # Добавление файла
+        if main_img.filename == '':
+            flash('Изображение не добавлено')
+            return redirect(url_for("add_article"))
+        if main_img:
+            app.config['UPLOAD_FOLDER'] = 'static/images/articles'
+            filename = secure_filename(main_img.filename)
+            filename = str(str(uuid.uuid1()) + '.' + str(filename)[::-1].split('.')[0][::-1])
+            main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            flash('Изображение не добавлено')
+            return redirect(url_for("add_article"))
 
         if len(title_article) == 0 or len(text_article) == 0:
             flash('Не все поля заполнены')
             return redirect(url_for("add_article"))
+
         article = Article(
-            title_article=title_article, text_article=text_article, main_img=main_img
+            title_article=title_article, text_article=text_article, main_img=filename
         )
 
         try:
             db.session.add(article)
             db.session.commit()
         except:
-            flash('Ошибка!')
+            flash('Ошибка добавления в базу данных!')
             return redirect(url_for("add_article"))
 
         return redirect(url_for("dashboard"))
