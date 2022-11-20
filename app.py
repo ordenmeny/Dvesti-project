@@ -40,7 +40,8 @@ class Article(db.Model):
 
 @app.route('/')
 def index():
-    return render_template('main/index.html')
+    users = db.session.execute(db.select(Article).order_by(Article.date)).scalars()
+    return render_template('main/index.html', users=users)
 
 
 @app.route('/dashboard')
@@ -58,9 +59,10 @@ def add_article():
 
         # Добавление файла
         if main_img.filename == '':
-            flash('Изображение не добавлено')
-            return redirect(url_for("add_article"))
-        if main_img:
+            app.config['UPLOAD_FOLDER'] = 'static/images/articles'
+            filename = 'no-image-v2-500x383@2x.jpg'
+            main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        elif main_img:
             app.config['UPLOAD_FOLDER'] = 'static/images/articles'
             filename = secure_filename(main_img.filename)
             filename = str(str(uuid.uuid1()) + '.' + str(filename)[::-1].split('.')[0][::-1])

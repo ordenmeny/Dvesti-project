@@ -18,15 +18,19 @@
 <div class="container">
     <p class="title-part">Актуальные статьи</p>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for user in users %}
         <div class="col card-margin-bottom">
             <div class="card h-100">
-                <a href="#"><img src="images/img_article.png" class="card-img-top"></a>
-                <div class="card-body">
-                    <a href="#" class="text-href"><p class="card-text title-post">Текст 1. тут что то написано. А вы
-                        думаете что тут написано?</p></a>
+                <div class="box">
+                    <a href="#"><img src="static/images/articles/{{ user.main_img }}" class="card-img-top"></a>
                 </div>
+                <div class="card-body">
+                    <a href="#" class="text-href"><p class="card-text title-post">{{ user.title_article }}</p></a>
+                </div>
+
             </div>
         </div>
+        {% endfor %}
     </div>
 </div>
 
