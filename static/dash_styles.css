@@ -1,0 +1,23 @@
+body{
+    background: #F2F2F2 !important;
+}
+.navbar{
+    background-color: #F2F2F2 !important;
+}
+
+.active{
+    color: #2F80ED !important;
+}
+
+.nav-link{
+    font-size: 24px;
+    color: black !important;
+}
+
+.hr-before-header{
+    background-color: black; /* Цвет линии для браузера Firefox и Opera */
+    border-top: 2px solid black !important; 
+    margin-right: 100px; 
+    margin-left: 100px; 
+    margin-bottom: 0;
+}

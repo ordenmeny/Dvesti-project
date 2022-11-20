@@ -1,0 +1,75 @@
+body{
+    background: #F2F2F2 !important;
+}
+.navbar{
+    background-color: #F2F2F2 !important;
+}
+
+.active{
+    color: #2F80ED !important;
+}
+
+.nav-link{
+    font-size: 24px;
+    color: black !important;
+}
+
+.hr-before-header{
+    background-color: black; /* Цвет линии для браузера Firefox и Opera */
+    border-top: 2px solid black !important; 
+    margin-right: 100px; 
+    margin-left: 100px; 
+    margin-bottom: 0;
+}
+
+.titles-main{
+    font-size: 24px;
+    color: #333333
+}
+
+.title-post{
+    font-size: 26px !important;
+    font-weight: 400;
+    text-align: left !important;
+}
+
+.primary-color{
+    color: #2F80ED !important;
+}
+
+.text-href{
+    text-decoration: none;
+    color: black;
+    transition: 0.2s;
+}
+.text-href:hover{
+    text-decoration: none;
+    color: #2F80ED;
+    transition: 0.2s;
+}
+
+
+.card-margin-bottom{
+    margin-bottom: 30px;
+}
+
+.title-part{
+    font-size: 28px;
+}
+
+
+.card{
+    background-color: #F2F2F2 !important;
+    border: none !important;
+}
+
+@media screen and (max-width: 767px) {
+    .adaptive-width-img-sm{
+        width: 90%;
+    }
+}
+@media screen and (min-width: 768px) {
+    .adaptive-width-img-sm{
+        width: 60%;
+    }
+}

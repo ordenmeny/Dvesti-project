@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "main/links.html" %}
+    <title>{{title}}</title>
+</head>
+<body>
+
+<h1 style="font-weight: 700; font-size: 64px" class="text-center mt-2 mb-4">д вести</h1>
+<hr class="hr-before-header">
+{% include "main/header.html" %}
+<br><br><br>
+
+<!-- Актуальные статьи -->
+<div class="container">
+    <p class="title-part">Актуальные статьи</p>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col card-margin-bottom">
+            <div class="card h-100">
+                <a href="#"><img src="images/img_article.png" class="card-img-top"></a>
+                <div class="card-body">
+                    <a href="#" class="text-href"><p class="card-text title-post">Текст 1. тут что то написано. А вы
+                        думаете что тут написано?</p></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+
+<!-- Новости школы -->
+<div class="container">
+    <p class="title-part">Новости школы</p>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col card-margin-bottom">
+            <div class="card h-100">
+                <a href="#"><img src="images/img_article.png" class="card-img-top"></a>
+                <div class="card-body">
+                    <a href="#" class="text-href"><p class="card-text title-post">Текст 1. тут что то написано. А вы
+                        думаете что тут написано?</p></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    </div>
+    <div class="col card-margin-bottom">
+        <div class="card h-100">
+            <a href="#"><img src="images/img_article.png" class="card-img-top"></a>
+            <div class="card-body">
+                <a href="#" class="text-href"><p class="card-text title-post">Текст 1. тут что то написано. А вы думаете
+                    что тут написано?</p></a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<br><br><br><br><br>
+
+
+{% include 'main/footer.html' %}
+</body>
+</html>

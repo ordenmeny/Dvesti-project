@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "dashboard/links.html" %}
+    <title>{{title}}</title>
+</head>
+<body>
+<h1 style="font-weight: 700; font-size: 64px" class="text-center mt-2 mb-4">Творческая студия</h1>
+<hr class="hr-before-header">
+{% include "dashboard/sidebar.html" %}
+<div class="container">
+{% for msg in get_flashed_messages() %}
+<div class="alert alert-primary alert-dismissible fade show" role="alert">
+  <strong>{{msg}}</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+</div>
+</body>
+</html>

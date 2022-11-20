@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    {% include "dashboard/links.html" %}
+</head>
+<body>
+<h1 style="font-weight: 700; font-size: 64px" class="text-center mt-2 mb-4">Добавить статью</h1>
+<hr class="hr-before-header">
+{% include "dashboard/sidebar.html" %}
+<br><br>
+
+<div class="container">
+    {% for msg in get_flashed_messages() %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>{{msg}}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="container">
+    <form method="post" action="{{ url_for('add_article') }}" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="mb-3">
+            {{ form.title_article(class="form-control", id="exampleFormControlInput1", placeholder='Заголовок') }}
+        </div>
+        <div class="mb-3">
+            {{ form.text_article(class="form-control", id="exampleFormControlTextarea1", rows="3") }}
+        </div>
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Выбрать изображение для главной страницы:</label>
+            {{ form.main_img(class="form-control", id="formFile") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='text_article') }}
+</div>
+
+<h1>{{ title_article }} {{ text_article }}</h1>
+</body>
+</html>
