@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, flash
-from wtforms import Form, BooleanField, StringField, validators, SubmitField, TextAreaField, FileField
+from wtforms import Form, BooleanField, StringField, validators, SubmitField, TextAreaField, FileField, PasswordField, \
+    EmailField
 from flask_ckeditor import CKEditor
 from flask_ckeditor import CKEditorField
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +9,7 @@ from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'c45264839c074e240ec999b2d2d97'
@@ -36,6 +38,22 @@ class Article(db.Model):
     tag = db.Column(db.String, nullable=False)
     text_article = db.Column(db.Text, nullable=False)
     main_img = db.Column(db.String, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow())
+
+
+class RegistrationForm(Form):
+    name = StringField('Username')
+    email = EmailField('Email Address')
+    password = PasswordField('Password')
+    mobile_number = StringField('mobile number')
+
+
+class RegistrationDB(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    mobile_number = db.Column(db.String, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
 
 
@@ -89,6 +107,41 @@ def add_article():
 
         return redirect(url_for("dashboard"))
     return render_template('dashboard/add_article.html', form=form, title='Добавить статью')
+
+
+@app.route('/registr', methods=['GET', 'POST'])
+def registr():
+    form = RegistrationForm()
+    if request.method == 'POST' and form.validate():
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        mobile_number = request.form['mobile_number']
+
+        first_email = RegistrationDB.query.filter_by(email=email).first()
+
+        if name and password and mobile_number and not first_email:
+            password_hash = generate_password_hash(password)
+            registrDB = RegistrationDB(name=name, email=email, password=password_hash, mobile_number=mobile_number)
+
+            try:
+                db.session.add(registrDB)
+                db.session.commit()
+            except:
+                flash('Ошибка добавления в базу данных!')
+                return redirect(url_for("registr"))
+
+            flash('Вы зарегистрировались! Дождитесь приглашения по email')
+            return redirect(url_for("index"))
+        else:
+            flash('Поля заполнены неправильно!')
+
+    return render_template('registr.html', title='Регистрация', form=form)
+
+
+@app.route('/signin')
+def signin():
+    return render_template('signin.html', title='Войти')
 
 
 if __name__ == "__main__":
