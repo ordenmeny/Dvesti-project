@@ -5,7 +5,6 @@ from flask_ckeditor import CKEditorField
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
-from transliterate import translit, get_available_language_codes
 from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
@@ -27,12 +26,14 @@ ckeditor = CKEditor(app)
 class Add_article(Form):
     title_article = StringField('title_article')
     text_article = CKEditorField('text_article')
+    tag = StringField('tag')
     main_img = FileField('Image File')
 
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title_article = db.Column(db.String, nullable=False)
+    tag = db.Column(db.String, nullable=False)
     text_article = db.Column(db.Text, nullable=False)
     main_img = db.Column(db.String, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
@@ -54,6 +55,7 @@ def add_article():
     form = Add_article()
     if request.method == 'POST' and form.validate():
         title_article = request.form['title_article']
+        tag = request.form['tag']
         text_article = request.form['text_article']
         main_img = request.files['main_img']
 
@@ -76,9 +78,8 @@ def add_article():
             return redirect(url_for("add_article"))
 
         article = Article(
-            title_article=title_article, text_article=text_article, main_img=filename
+            title_article=title_article, tag=tag, text_article=text_article, main_img=filename
         )
-
         try:
             db.session.add(article)
             db.session.commit()

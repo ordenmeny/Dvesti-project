@@ -28,7 +28,7 @@ body{
 }
 
 .title-post{
-    font-size: 26px !important;
+    font-size: 20px !important;
     font-weight: 400;
     text-align: left !important;
 }
@@ -73,7 +73,10 @@ body{
    object-fit:cover;
 }
 
-
+.card{
+    background-color: #F2F2F2 !important;
+    border: none !important;
+}
 
 @media screen and (max-width: 767px) {
     .adaptive-width-img-sm{
