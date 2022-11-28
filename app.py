@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_manager, login_required, logout_user, current_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'c45264839c074e240ec999b2d2d97'
@@ -23,6 +24,12 @@ migrate = Migrate(app, db)
 db.init_app(app)
 
 ckeditor = CKEditor(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "signin"
+login_manager.login_message = "Please log in to access this page."
+login_manager.login_message = "Доступ запрещен. В данный момент у вас нет доступа к этой странице."
 
 
 class Add_article(Form):
@@ -48,13 +55,23 @@ class RegistrationForm(Form):
     mobile_number = StringField('mobile number')
 
 
-class RegistrationDB(db.Model):
+class LoginForm(Form):
+    email = EmailField('Email Address')
+    password = PasswordField('Password')
+
+
+class RegistrationDB(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
     mobile_number = db.Column(db.String, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return RegistrationDB.query.get(int(user_id))
 
 
 @app.route('/')
@@ -64,6 +81,7 @@ def index():
 
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
     return render_template('dashboard/dashboard.html', title='Dashboard')
 
@@ -139,9 +157,35 @@ def registr():
     return render_template('registr.html', title='Регистрация', form=form)
 
 
-@app.route('/signin')
+@app.route('/signin', methods=['GET', 'POST'])
 def signin():
-    return render_template('signin.html', title='Войти')
+    form = LoginForm()
+    if request.method == 'POST' and form.validate():
+        email = request.form['email']
+        password = request.form['password']
+
+        if email and password:
+            user = db.session.execute(db.select().filter_by(email=email)).fetchone()[0]
+            password_db = db.session.execute(db.select(RegistrationDB).where(RegistrationDB.email == email)).scalars().all()[0]
+
+            if user and check_password_hash(password_db, password):
+                login_user(user)
+                return redirect(url_for("dashboard"))
+            else:
+                flash('Неправильный логин или пароль')
+                return redirect(url_for("signin"))
+        else:
+            flash('Введите данные')
+            return redirect(url_for("signin"))
+
+    return render_template('signin.html', title='Войти', form=form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('signin'))
 
 
 if __name__ == "__main__":

@@ -16,16 +16,23 @@
 <hr class="hr-before-header">
 {% include "main/header.html" %}
 <br><br>
-
+<div class="container">
+    {% for msg in get_flashed_messages() %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>{{msg}}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
 <div class="container">
     <form method="post">
         <div class="mb-3 col-lg-6">
             <label for="formGroupExampleInput" class="form-label">Email</label>
-            <input type="text" class="form-control" id="formGroupExampleInput">
+            {{ form.email(class="form-control", id="formGroupExampleInput") }}
         </div>
         <div class="mb-3 col-lg-6">
             <label for="formGroupExampleInput" class="form-label">Пароль</label>
-            <input type="password" class="form-control" id="formGroupExampleInput">
+            {{ form.password(class="form-control", id="formGroupExampleInput") }}
         </div>
         <button type="submit" class="btn btn-primary">Войти</button>
     </form>
