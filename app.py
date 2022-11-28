@@ -165,14 +165,25 @@ def signin():
         password = request.form['password']
 
         if email and password:
-            user = db.session.execute(db.select().filter_by(email=email)).fetchone()[0]
-            password_db = db.session.execute(db.select(RegistrationDB).where(RegistrationDB.email == email)).scalars().all()[0]
+            user = db.session.execute(
+                db.select(RegistrationDB).filter_by(email=email)).first()  # select raw with input email(iter) or None
 
-            if user and check_password_hash(password_db, password):
-                login_user(user)
-                return redirect(url_for("dashboard"))
+            if user:
+                password_hash = user[0].password
+                check_password = check_password_hash(password_hash, password)
+
+                if check_password:
+                    user_log = user[0]
+                    login_user(user_log)
+                    text = f'Вы вошли под логином {email}'
+                    flash(text)
+                    return redirect(url_for("signin"))
+                else:
+                    flash('Неверный пароль')
+                    return redirect(url_for("signin"))
+
             else:
-                flash('Неправильный логин или пароль')
+                flash('Такого пользователя не существует')
                 return redirect(url_for("signin"))
         else:
             flash('Введите данные')
