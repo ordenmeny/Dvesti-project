@@ -11,6 +11,8 @@ import uuid as uuid
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_manager, login_required, logout_user, current_user
+import smtplib
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'c45264839c074e240ec999b2d2d97'
@@ -69,6 +71,15 @@ class RegistrationDB(db.Model, UserMixin):
     date = db.Column(db.DateTime, default=datetime.utcnow())
 
 
+class TempRegistrDB(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    mobile_number = db.Column(db.String, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow())
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return RegistrationDB.query.get(int(user_id))
@@ -87,6 +98,7 @@ def dashboard():
 
 
 @app.route('/add_article', methods=['GET', 'POST'])
+@login_required
 def add_article():
     form = Add_article()
     if request.method == 'POST' and form.validate():
@@ -140,19 +152,19 @@ def registr():
 
         if name and password and mobile_number and not first_email:
             password_hash = generate_password_hash(password)
-            registrDB = RegistrationDB(name=name, email=email, password=password_hash, mobile_number=mobile_number)
+            tempregistrDB = TempRegistrDB(name=name, email=email, password=password_hash, mobile_number=mobile_number)
 
             try:
-                db.session.add(registrDB)
+                db.session.add(tempregistrDB)
                 db.session.commit()
             except:
                 flash('Ошибка добавления в базу данных!')
                 return redirect(url_for("registr"))
 
-            flash('Вы зарегистрировались! Дождитесь приглашения по email')
+            flash('Вы зарегистрировались! Дождитесь приглашения по email (письмо может лежать в спам)')
             return redirect(url_for("index"))
         else:
-            flash('Поля заполнены неправильно!')
+            flash('Поля заполнены неправильно! Или такой аккаунт уже существует!')
 
     return render_template('registr.html', title='Регистрация', form=form)
 
@@ -177,7 +189,7 @@ def signin():
                     login_user(user_log)
                     text = f'Вы вошли под логином {email}'
                     flash(text)
-                    return redirect(url_for("signin"))
+                    return redirect(url_for("dashboard"))
                 else:
                     flash('Неверный пароль')
                     return redirect(url_for("signin"))
@@ -190,6 +202,54 @@ def signin():
             return redirect(url_for("signin"))
 
     return render_template('signin.html', title='Войти', form=form)
+
+
+def send_email(message, receiver):
+    sender = 'newsmobileads@gmail.com'
+    password = 'zsvuepxgypsmaypn'
+
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+
+    try:
+        server.login(sender, password)
+        msg = MIMEText(message)
+        msg["Subject"] = "Школьная газета dvesti"
+        server.sendmail(sender, receiver, msg.as_string())
+        return 'Сообщение отправлено'
+    except:
+        return 'Произошла ошибка!'
+
+
+@app.route('/receive/')
+@app.route('/receive/<int:id>/<check>')
+def receive(id=None, check=None):
+    users = db.session.execute(db.select(TempRegistrDB)).scalars().all()
+    print(users)
+    if check == 'success':
+        get_user = db.get_or_404(TempRegistrDB, id)
+        name = get_user.name
+        email = get_user.email
+        password = get_user.password
+        mobile_number = get_user.mobile_number
+        date = get_user.date
+
+        user_reg_db = RegistrationDB(name=name, email=email, password=password, mobile_number=mobile_number, date=date)
+
+        try:
+            db.session.delete(get_user)
+            db.session.add(user_reg_db)
+            db.session.commit()
+            # send message to email
+            message = 'Вы были зарегистрированы на сайте школьной газеты dvesti.\nТеперь вы можете войти в Кабинет Редактора!'
+            send_email(message=message, receiver=email)
+        except:
+            flash('Ошибка добавления в базу данных редакторов!')
+            return redirect(url_for("registr"))
+
+        return redirect(url_for('receive'))
+
+    return render_template('dashboard/receive.html', title='Админ панель', users=users)
 
 
 @app.route("/logout")
