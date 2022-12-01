@@ -88,13 +88,14 @@ def load_user(user_id):
 @app.route('/')
 def index():
     users = db.session.execute(db.select(Article).order_by(Article.date)).scalars()
-    return render_template('main/index.html', users=users)
+    return render_template('main/index.html', users=users, title='Д-вести: статьи и новости')
 
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard/dashboard.html', title='Dashboard')
+    return redirect(url_for('add_article'))
+    # return render_template('dashboard/dashboard.html', title='Dashboard')
 
 
 @app.route('/add_article', methods=['GET', 'POST'])
@@ -110,8 +111,8 @@ def add_article():
         # Добавление файла
         if main_img.filename == '':
             app.config['UPLOAD_FOLDER'] = 'static/images/articles'
-            filename = 'no-image-v2-500x383@2x.jpg'
-            main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            filename = 'no-img.png'
+            # main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         elif main_img:
             app.config['UPLOAD_FOLDER'] = 'static/images/articles'
             filename = secure_filename(main_img.filename)
@@ -135,7 +136,8 @@ def add_article():
             flash('Ошибка добавления в базу данных!')
             return redirect(url_for("add_article"))
 
-        return redirect(url_for("dashboard"))
+        flash('Статья добавлена!')
+        return redirect(url_for("index"))
     return render_template('dashboard/add_article.html', form=form, title='Добавить статью')
 
 
@@ -250,6 +252,16 @@ def receive(id=None, check=None):
         return redirect(url_for('receive'))
 
     return render_template('dashboard/receive.html', title='Админ панель', users=users)
+
+
+@app.route('/show_article/<int:id>', methods=['GET', 'POST'])
+def show_article(id=None):
+    post = db.get_or_404(Article, id)
+    title = post.title_article
+    tag = post.tag
+    text_article = post.text_article
+    main_img = post.main_img
+    return render_template('main/show_article.html', title=title, tag=tag, text_article=text_article, main_img=main_img)
 
 
 @app.route("/logout")

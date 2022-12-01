@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% include "main/links.html" %}
+    <link rel="icon" href="{{url_for('static', filename='images/favicon.png')}}" type="image/x-icon">
     <title>{{title}}</title>
 </head>
 <body>
@@ -29,11 +30,11 @@
         <div class="col card-margin-bottom">
             <div class="card h-100">
                 <div class="box">
-                    <a href="#"><img src="static/images/articles/{{ user.main_img }}" class="card-img-top"></a>
+                    <a href="show_article/{{user.id}}"><img src="static/images/articles/{{ user.main_img }}" class="card-img-top"></a>
                 </div>
                 <div class="card-body">
-                    <a href="#" class="text-href"><p class="card-text title-post">{{ user.tag }}</p></a>
-                    <a href="#" class="text-href"><p class="card-text title-post">{{ user.title_article }}</p></a>
+                    <a href="show_article/{{user.id}}" class="text-href"><p class="card-text title-post">{{ user.tag }}</p></a>
+                    <a href="show_article/{{user.id}}" class="text-href"><p class="card-text title-post">{{ user.title_article }}</p></a>
                 </div>
             </div>
         </div>
@@ -41,38 +42,7 @@
     </div>
 </div>
 
-<br><br><br>
 
-<!-- Новости школы -->
-<div class="container">
-    <p class="title-part">Новости школы</p>
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        <div class="col card-margin-bottom">
-            <div class="card h-100">
-                <a href="#"><img src="images/img_article.png" class="card-img-top"></a>
-                <div class="card-body">
-                    <a href="#" class="text-href"><p class="card-text title-post">Текст 1. тут что то написано. А вы
-                        думаете что тут написано?</p></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    </div>
-    <div class="col card-margin-bottom">
-        <div class="card h-100">
-            <a href="#"><img src="images/img_article.png" class="card-img-top"></a>
-            <div class="card-body">
-                <a href="#" class="text-href"><p class="card-text title-post">Текст 1. тут что то написано. А вы думаете
-                    что тут написано?</p></a>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
 
 <br><br><br><br><br>
 

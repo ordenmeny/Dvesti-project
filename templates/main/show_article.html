@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "main/links.html" %}
+    <title>{{title}}</title>
+</head>
+<body>
+
+<h1 style="font-weight: 700; font-size: 64px" class="text-center mt-2 mb-4">Д-вести</h1>
+<hr class="hr-before-header">
+{% include "main/header.html" %}
+<br><br><br>
+<div class="container">
+    {% for msg in get_flashed_messages() %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>{{msg}}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+<!-- Актуальные статьи -->
+
+<div class="container pt-5 ps-5 pb-5 pe-5" style="background-color: white">
+    <h2 class="show-article-adaptive-img">{{title}}</h2>
+    <h4>{{tag}}</h4><br>
+    <div class="show-article-adaptive-img">
+        <img src="/static/images/articles/{{main_img}}" width="100%">
+        <br><br>
+    </div>
+
+    <div style="" class="show-article-adaptive-img">
+        <p class="title-post">
+            {{ text_article| safe }}
+        </p>
+    </div>
+
+</div>
+
+
+<br><br><br><br><br>
+
+
+{% include 'main/footer.html' %}
+</body>
+</html>
