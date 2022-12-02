@@ -47,6 +47,7 @@ class Article(db.Model):
     tag = db.Column(db.String, nullable=False)
     text_article = db.Column(db.Text, nullable=False)
     main_img = db.Column(db.String, nullable=False)
+    author = db.Column(db.String)
     date = db.Column(db.DateTime, default=datetime.utcnow())
 
 
@@ -85,17 +86,70 @@ def load_user(user_id):
     return RegistrationDB.query.get(int(user_id))
 
 
+@app.route('/edit')
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id=None):
+    form = Add_article()
+    if request.method == 'POST':
+        title_article = request.form['title_article']
+        tag = request.form['tag']
+        text_article = request.form['text_article']
+        main_img = request.files['main_img']
+
+        article = db.get_or_404(Article, id)
+
+        article.title_article = title_article
+        article.tag = tag
+
+        if text_article:
+            article.text_article = text_article
+
+        # обновление картинки
+
+        if main_img.filename:
+            app.config['UPLOAD_FOLDER'] = 'static/images/articles'
+            # delete image
+            filename_old = article.main_img
+            try:
+                os.unlink(os.path.join(app.config['UPLOAD_FOLDER'], filename_old))
+            except FileNotFoundError:
+                pass
+            except:
+                flash('Ошибка обновления картинки')
+                return redirect(url_for('edit'))
+
+            app.config['UPLOAD_FOLDER'] = 'static/images/articles'
+            filename = secure_filename(main_img.filename)
+            filename = str(str(uuid.uuid1()) + '.' + str(filename)[::-1].split('.')[0][::-1])
+            main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            article.main_img = filename
+
+        try:
+            db.session.commit()
+        except:
+            flash('Ошибка обновления!')
+            return redirect(url_for('edit'))
+
+        flash('Данные обновлены')
+        return redirect(url_for('index'))
+
+    articles = db.session.execute(db.select(Article).order_by(db.desc(Article.id))).scalars()
+
+    return render_template('dashboard/edit.html', title='Редактировать', articles=articles, form=form)
+
+
 @app.route('/')
 def index():
-    users = db.session.execute(db.select(Article).order_by(Article.date)).scalars()
+    users = db.session.execute(db.select(Article).order_by(db.desc(Article.id))).scalars()
     return render_template('main/index.html', users=users, title='Д-вести: статьи и новости')
 
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return redirect(url_for('add_article'))
-    # return render_template('dashboard/dashboard.html', title='Dashboard')
+    # return redirect(url_for('add_article'))
+    return render_template('dashboard/dashboard.html', title='Dashboard')
 
 
 @app.route('/add_article', methods=['GET', 'POST'])
@@ -112,7 +166,6 @@ def add_article():
         if main_img.filename == '':
             app.config['UPLOAD_FOLDER'] = 'static/images/articles'
             filename = 'no-img.png'
-            # main_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         elif main_img:
             app.config['UPLOAD_FOLDER'] = 'static/images/articles'
             filename = secure_filename(main_img.filename)

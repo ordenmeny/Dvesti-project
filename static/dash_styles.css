@@ -21,3 +21,49 @@ body{
     margin-left: 100px; 
     margin-bottom: 0;
 }
+
+.title-part{
+    font-size: 28px;
+}
+
+.card-margin-bottom{
+    margin-bottom: 30px;
+}
+
+.card{
+    background-color: #F2F2F2 !important;
+    border: none !important;
+}
+
+.box {
+   position: relative;
+   overflow:hidden;
+   height:300px;
+}
+
+.box img {
+   position: absolute;
+   top:50%;
+   left: 50%;
+   transform:translate(-50%,-50%);
+   height:300px;
+   object-fit:cover;
+}
+
+.text-href{
+    text-decoration: none;
+    color: black;
+    transition: 0.2s;
+}
+.text-href:hover{
+    text-decoration: none;
+    color: #ffc107;
+    transition: 0.2s;
+}
+
+
+.title-post{
+    font-size: 20px !important;
+    font-weight: 400;
+    text-align: left !important;
+}
