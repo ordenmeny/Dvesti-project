@@ -1,5 +1,8 @@
 body{
     background: #F2F2F2 !important;
+    display: flex !important;
+    min-height: 100vh !important;
+    flex-direction: column !important;
 }
 .navbar{
     background-color: #F2F2F2 !important;
@@ -79,8 +82,9 @@ body{
 }
 
 img{
-    width: 100% !important;
-    height: 100% !important;
+    display: block;
+    max-width: 100%;
+    object-fit: scale-down;
 }
 
 

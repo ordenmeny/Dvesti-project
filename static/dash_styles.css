@@ -1,5 +1,6 @@
 body{
     background: #F2F2F2 !important;
+    min-height: 100vh;
 }
 .navbar{
     background-color: #F2F2F2 !important;
@@ -66,4 +67,20 @@ body{
     font-size: 20px !important;
     font-weight: 400;
     text-align: left !important;
+}
+
+@media screen and (max-width: 500px){
+    .edit-font{
+        font-size: 50px !important;
+    }
+}
+@media screen and (max-width: 400px){
+    .edit-font{
+        font-size: 40px !important;
+    }
+}
+@media screen and (max-width: 300px){
+    .edit-font{
+        font-size: 30px !important;
+    }
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "main/links.html" %}
+    <link rel="icon" href="{{url_for('static', filename='images/favicon.png')}}" type="image/x-icon">
+    <title>{{title}}</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<h1 style="font-weight: 700; font-size: 64px" class="text-center mt-2 mb-4">Д-вести</h1>
+<hr class="hr-before-header">
+{% include "main/header.html" %}
+<br><br><br>
+<div class="container">
+    {% for msg in get_flashed_messages() %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>{{msg}}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="container">
+    <form method="post">
+        <div class="mb-3 col-lg-6">
+            <label for="formGroupExampleInput" class="form-label">Пароль</label>
+            {{ form.password(class="form-control", id="formGroupExampleInput") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Войти</button>
+        <a href="/registr" class="btn btn-primary">Регистрация</a>
+    </form>
+</div>
+
+</body>
+</html>

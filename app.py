@@ -13,6 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_manager, login_required, logout_user, current_user
 import smtplib
 from email.mime.text import MIMEText
+from flask_admin import Admin
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'c45264839c074e240ec999b2d2d97'
@@ -69,6 +70,7 @@ class RegistrationDB(db.Model, UserMixin):
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
     mobile_number = db.Column(db.String, nullable=False)
+    status_admin = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.utcnow())
 
 
@@ -88,6 +90,7 @@ def load_user(user_id):
 
 @app.route('/edit')
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit(id=None):
     form = Add_article()
     if request.method == 'POST':
@@ -105,13 +108,11 @@ def edit(id=None):
             article.text_article = text_article
 
         # обновление картинки
-
         if main_img.filename:
             app.config['UPLOAD_FOLDER'] = 'static/images/articles'
-            # delete image
             filename_old = article.main_img
             try:
-                os.unlink(os.path.join(app.config['UPLOAD_FOLDER'], filename_old))
+                os.unlink(os.path.join(app.config['UPLOAD_FOLDER'], filename_old))  # delete image
             except FileNotFoundError:
                 pass
             except:
@@ -148,8 +149,8 @@ def index():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # return redirect(url_for('add_article'))
-    return render_template('dashboard/dashboard.html', title='Dashboard')
+    return redirect(url_for('add_article'))
+    # return render_template('dashboard/dashboard.html', title='Dashboard')
 
 
 @app.route('/add_article', methods=['GET', 'POST'])
@@ -216,6 +217,12 @@ def registr():
                 flash('Ошибка добавления в базу данных!')
                 return redirect(url_for("registr"))
 
+            try:
+                message = 'Был зарегистрирован новый пользователь'
+                send_email(message=message, receiver='ordenmeny@yandex.ru')
+            except:
+                pass
+
             flash('Вы зарегистрировались! Дождитесь приглашения по email (письмо может лежать в спам)')
             return redirect(url_for("index"))
         else:
@@ -276,11 +283,11 @@ def send_email(message, receiver):
         return 'Произошла ошибка!'
 
 
-@app.route('/receive/')
-@app.route('/receive/<int:id>/<check>')
+@app.route('/receive/', methods=['GET', 'POST'])
+@app.route('/receive/<int:id>/<check>', methods=['GET', 'POST'])
+@login_required
 def receive(id=None, check=None):
     users = db.session.execute(db.select(TempRegistrDB)).scalars().all()
-    print(users)
     if check == 'success':
         get_user = db.get_or_404(TempRegistrDB, id)
         name = get_user.name
