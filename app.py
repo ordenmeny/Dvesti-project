@@ -324,6 +324,19 @@ def show_article(id=None):
     return render_template('main/show_article.html', title=title, tag=tag, text_article=text_article, main_img=main_img)
 
 
+@app.route('/delete_post/<int:id>')
+def delete_post(id):
+    post = db.get_or_404(Article, id)
+    try:
+        db.session.delete(post)
+        db.session.commit()
+    except:
+        flash('Ошибка удаления')
+        return redirect(url_for('index'))
+
+    return redirect(url_for('index'))
+
+
 @app.route("/logout")
 @login_required
 def logout():

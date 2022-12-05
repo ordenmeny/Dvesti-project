@@ -57,6 +57,7 @@
             {{ form.main_img(class="form-control", id="formFile") }}
         </div>
         <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a type="submit" class="btn btn-danger" href="delete_post/{{article.id}}">Удалить</a>
     </form>
     {{ ckeditor.load() }}
     {{ ckeditor.config(name='text_article') }}

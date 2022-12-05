@@ -27,7 +27,11 @@
     <h2 class="show-article-adaptive-img">{{title}}</h2>
     <h4>{{tag}}</h4><br>
     <div class="show-article-adaptive-img">
+        {% if main_img == 'no-img.png' %}
+
+        {% else %}
         <img src="/static/images/articles/{{main_img}}" width="100%">
+        {% endif %}
         <br><br>
     </div>
 
