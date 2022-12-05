@@ -159,7 +159,7 @@ def add_article():
     form = Add_article()
     if request.method == 'POST' and form.validate():
         title_article = request.form['title_article']
-        tag = request.form['tag']
+        tag = request.form['tag'].upper()
         text_article = request.form['text_article']
         main_img = request.files['main_img']
 
